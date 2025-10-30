@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Support System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 16px 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quick-action-btn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .quick-action-btn:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: #d1d5db;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .chat-window {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #f8fafc;
+        }
+
+        .chat-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .chat-bubble.bot {
+            align-self: flex-start;
+            background: white;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .chat-bubble.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .chat-bubble::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+
+        .chat-bubble.bot::before {
+            left: -8px;
+            top: 12px;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 8px solid white;
+        }
+
+        .chat-bubble.user::before {
+            right: -8px;
+            top: 12px;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 8px solid #3b82f6;
+        }
+
+        .timestamp {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-top: 4px;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 20px 24px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .input-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .message-input {
+            width: 100%;
+            min-height: 44px;
+            max-height: 120px;
+            padding: 12px 50px 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            transition: all 0.2s ease;
+            background: #f8fafc;
+        }
+
+        .message-input:focus {
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .message-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .chat-bubble {
+                max-width: 85%;
+            }
+            
+            .input-area {
+                padding: 16px;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-window::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .chat-window::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .chat-window::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Loading indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 16px;
+            max-width: 70px;
+            align-self: flex-start;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #9ca3af;
+            border-radius: 50%;
+            animation: typing 1.5s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Research Support System</h1>
+        <p>Your intelligent research support system</p>
+    </div>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3>Upload Documents</h3>
+                <button class="upload-btn">
+                    📄 Upload Files
+                </button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Quick Actions</h3>
+                <div class="quick-actions">
+                    <button class="quick-action-btn">📝 Summarize Text</button>
+                    <button class="quick-action-btn">🔍 Find References</button>
+                    <button class="quick-action-btn">✏️ Rephrase Content</button>
+                    <button class="quick-action-btn">📊 Generate Citations</button>
+                    <button class="quick-action-btn">💡 Research Ideas</button>
+                </div>
+            </div>
+
+        
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <div class="chat-window" id="chatWindow">
+                <!-- Sample Messages -->
+               
+                
+        
+
+                <!-- Typing Indicator (hidden by default) -->
+                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-container">
+                    <textarea 
+                        class="message-input" 
+                        id="messageInput" 
+                        placeholder="Ask me anything about your research..."
+                        rows="1"
+                        onkeydown="handleKeyPress(event)"
+                        oninput="adjustTextareaHeight()"></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                        ➤
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+       // const OLLAMA_URL = 'http://localhost:11434';
+        const MODEL_NAME = 'llama3.2';
+        
+        // Chat history for context
+        let chatHistory = [];
+        
+        // System prompt for research assistance
+        const SYSTEM_PROMPT = `You are a helpful research su[pport system AI. You specialize in:
+- Summarizing academic papers and research documents
+- Finding and formatting references
+- Rephrasing and improving academic writing
+- Analyzing research methodologies
+- Identifying key findings and conclusions
+- Suggesting research directions
+- Helping with citation formatting
+
+Please provide clear, accurate, and helpful responses to research-related queries. Be concise but thorough in your explanations.`;
+
+        // Auto-resize textarea
+        function adjustTextareaHeight() {
+            const textarea = document.getElementById('messageInput');
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        // Handle Enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Send message function
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+
+            // Disable send button and input during processing
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            input.disabled = true;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            
+            // Add to chat history
+            chatHistory.push({ role: 'user', content: message });
+            
+            // Clear input
+            input.value = '';
+            adjustTextareaHeight();
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            try {
+                // Send request to Ollama
+                const response = await fetch(`http://localhost:8000/ask`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question: message
+                        
+                        
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const botResponse = data.answer;
+                const sources= data.sources;
+
+                let sourceText= "";
+                if (sources && sources.length>0){
+                    sourceText= "\n\n Sources: \n "+ sources.map(src => `- ${src}`).join("\n");
+                }
+               
+                // Add bot response to chat history
+                chatHistory.push({ role: 'assistant', content: botResponse });
+                
+                // Hide typing indicator and show response
+                hideTypingIndicator();
+                addMessage(botResponse+sourceText,'bot');
+                
+            } catch (error) {
+                console.error('Error calling Ollama API:', error);
+                hideTypingIndicator();
+                
+                let errorMessage = 'Sorry, I encountered an error. ';
+                
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage += 'Please make sure Ollama is running locally on port 11434. You can start it with: `ollama serve`';
+                } else if (error.message.includes('404')) {
+                    errorMessage += `The model "${MODEL_NAME}" might not be available. Please run: \`ollama pull ${MODEL_NAME}\``;
+                } else {
+                    errorMessage += 'Please check the console for more details.';
+                }
+                
+                addMessage(errorMessage, 'bot');
+            } finally {
+                // Re-enable send button and input
+                sendBtn.disabled = false;
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        // Add message to chat window
+        function addMessage(text, sender) {
+            const chatWindow = document.getElementById('chatWindow');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-bubble ${sender}`;
+            
+            const now = new Date();
+            const timestamp = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            // Format text with line breaks and basic markdown support
+            const formattedText = formatMessage(text);
+            
+            messageDiv.innerHTML = `
+                ${formattedText}
+                <div class="timestamp">${timestamp}</div>
+            `;
+            
+            chatWindow.appendChild(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Format message text (basic markdown support)
+        function formatMessage(text) {
+            return text
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code style="background: #f1f5f9; padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>');
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            const chatWindow = document.getElementById('chatWindow');
+            indicator.style.display = 'flex';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'none';
+        }
+
+    
+     
+
+        // Toggle dark mode (non-functional placeholder)
+        function toggleDarkMode() {
+            // This is a placeholder function for the toggle
+            // In a real implementation, you would add dark mode CSS classes
+            console.log('Dark mode toggle clicked - not implemented in this template');
+        }
+
+        // Quick action buttons with context
+        document.querySelectorAll('.quick-action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.textContent.trim();
+                let prompt = '';
+                
+                switch(action) {
+                    case '📝 Summarize Text':
+                        prompt = 'Please help me summarize a research document. I will provide the text that needs to be summarized.';
+                        break;
+                    case '🔍 Find References':
+                        prompt = 'I need help finding relevant references for my research topic. Can you provide me with the references?';
+                        break;
+                    case '✏️ Rephrase Content':
+                        prompt = 'I need help rephrasing some academic content to improve clarity and flow. I will provide the text that needs to be improved.';
+                        break;
+                    case '📊 Generate Citations':
+                        prompt = 'Can you help me format citations properly? I need assistance with academic citation styles.';
+                        break;
+                    case '💡 Research Ideas':
+                        prompt = 'I\'m looking for research ideas and suggestions based on my topic. Can you help me brainstorm potential research directions?';
+                        break;
+                    default:
+                        prompt = `Please help me with: ${action}`;
+                }
+                
+                // Set the input value and send the message
+                document.getElementById('messageInput').value = prompt;
+                sendMessage();
+            });
+        });
+
+        // Upload button
+        document.querySelector('.upload-btn').addEventListener('click', function() {
+            // Create file input
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.txt,.pdf,.doc,.docx,.md';
+            fileInput.style.display = 'none';
+            
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    // For now, just show a message about the file
+                    addMessage(`I've selected the file: ${file.name}. Note: File processing is not yet implemented in this version. Please copy and paste the text content for analysis.`, 'user');
+                    
+                    // In a full implementation, you would:
+                    // 1. Read the file content
+                    // 2. Extract text (using libraries like pdf-lib for PDFs)
+                    // 3. Send the content to the AI for analysis
+                }
+            });
+            
+            document.body.appendChild(fileInput);
+            fileInput.click();
+            document.body.removeChild(fileInput);
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            document.getElementById('messageInput').focus();
+            
+            
+            
+            // Add welcome message
+            setTimeout(() => {
+                addMessage('Hello! I\'m your Research Support System. I can help you with summarizing documents, finding references, rephrasing content, and much more. How can I assist you with your research today?', 'bot');
+            }, 500);
+        });
+
+        // Keep chat history manageable (last 20 messages)
+        function trimChatHistory() {
+            if (chatHistory.length > 20) {
+                chatHistory = chatHistory.slice(-20);
+            }
+        }
+
+        // Call trimChatHistory after each conversation
+        setInterval(trimChatHistory, 10000);
+    </script>
+</body>
+</html>
